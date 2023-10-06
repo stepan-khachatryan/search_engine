@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+	<!-- Enable loading content from the static folder -->
+	{% load static %}
+	<meta name="description" content="Experience the future of search with our AI-powered search engine. Discover a new level of intelligence as we search everything about artificial intelligence for you.">
+	<meta name="keywords" content="AI Search, Intelligent Search, Advanced Search, Semantic Search">
+	<meta name="author" content="Stepan Khachatryan">
+	<meta name="Copyright" content="Stepan Khachatryan">
+	<!-- OG Meta Tags to improve the way the post looks when you share the page on Facebook, Twitter, LinkedIn -->
+	<meta property="og:site_name" content="Search Engine">
+	<meta property="og:title" content="Search Engine">
+	<meta property="og:description" content="Experience the future of search with our AI-powered search engine.">
+	<meta property="og:image" content="{% static 'Search-Engine.png' %}">
+	<meta property="og:url" content=""> <!-- Don't forget to add -->
+	<meta property="og:type" content="website">
+	<meta name="twitter:card" content="summary_large_image">
+	<!-- Webpage Title -->
+	<title>AI Search Engine</title>
+	<!-- Styles -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+</head>
+<body>
+	<main class="d-flex container flex-column align-items-center">
+		<a href="/" class="logo"><img src="{% static 'logo.gif' %}" class="mb-4 logo" alt="SO Search Ninja" draggable="false"></a>
+
+		<form id="form-search" class="d-flex" method="get" action="{% url 'search' %}">
+			<input data-url="{% url 'complete' %}" type="text" name="query" id="query" value="{{ request.GET.query }}" autofocus placeholder="Search Something..." autocomplete="off">
+			<button class="button" type="submit" id="search" value="Search"><i class="fas fa-search"></i></button>
+		</form>
+
+		{% if spelling_correction %}
+			<div class="found">
+				<em >Did you mean:
+					<a href="?query={{spelling_correction |urlencode}}">
+						{{spelling_correction}}
+					</a>
+				</em>
+			</div>
+		{% endif %}
+		{% if searchresults %}
+
+		<div class="found">
+			Found {{ num_results }} results
+		</div>
+
+		<table class="table">
+			{% for result in searchresults %}
+			<tr>
+				<td>{{ result |safe }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+
+		<br>
+		<nav class="content">
+			<ul class="pagination">
+				{% if page_obj.has_previous %}
+				<li class="page-item"><a class="page-link" href="?query={{ request.GET.query|urlencode }}&page={{page_obj.previous_page_number}}">&lsaquo;</a></li>
+				{% else %}
+				<li class="page-item disabled"><a class="page-link" href="#">&lsaquo;</a></li>
+				{% endif %}
+				<li class="page-item page-number-of disabled"><a class="page-link" href="#">Page {{page_obj.number}} of
+					{{page_obj.paginator.num_pages}}</a></li>
+				{% for i in page_obj.paginator.page_range %}
+				{% if page_obj.number == i %}
+				<li class="page-item page-number active"><a class="page-link" href="?query={{ request.GET.query|urlencode }}&page={{i}}">{{i}}</a></li>
+				{% else %}
+				<li class="page-item page-number"><a class="page-link" href="?query={{ request.GET.query|urlencode }}&page={{i}}">{{i}}</a></li>
+				{% endif %}
+				{% endfor %}
+				{% if page_obj.has_next %}
+				<li class="page-item"><a class="page-link" href="?query={{ request.GET.query|urlencode }}&page={{ page_obj.next_page_number}}">&rsaquo;</a>
+				{% else %}
+				<li class="page-item disabled"><a class="page-link" href="#">&rsaquo;</a></li>
+				{% endif %}
+			</ul>
+		</nav>
+		{% endif %}
+	</main>
+
+	<footer class="footer">
+		<div class="container text-center">
+			<p class="small copy">Built by <span>Stepan Khachatryan</span> at <br>TUMO Gyumri, 2023</p>
+		</div>
+	</footer>
+
+	<!-- Top Button -->
+	<a href="#" class="to-top"><i class="fa-solid fa-angle-up"></i></a>
+	<!-- Scripts -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/gh/xcash/bootstrap-autocomplete@v2.3.7/dist/latest/bootstrap-autocomplete.min.js"></script>
+	<script src="https://kit.fontawesome.com/bbf798ce9b.js"></script>
+	<script src="{% static 'search.js'%}"></script>
+	<script src="{% static 'script.js'%}"></script>
+</body>
+</html>
